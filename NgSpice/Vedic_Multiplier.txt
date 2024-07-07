@@ -1,0 +1,236 @@
+* 4bit vedic multiplier
+*738 - 472 = 266
+
+.include 180nm.bsim3.txt
+*------------------------------------------------
+*                  Inverter 
+*------------------------------------------------
+
+.subckt in vdd vss vin vo
+
+mp vo vin vdd vdd P1  w = 20u l = 2u
+mn vo vin vss vss n1  w = 20u l = 2u
+.ends
+
+*------------------------------------------------
+*             Transmission Gate
+*------------------------------------------------
+
+
+.subckt tg In1 In0 B B_bar C
+
+xin1 vdd vss B B_bar in
+
+mp1 C B_bar In1 vdd P1 w = 20u l = 2u
+mn1 C B In1 vss n1 w = 20u l = 2u
+
+mp2 C B In0 vdd p1 w = 20u l = 2u
+mn2 C B_bar In0 vss n1 w = 20u l = 2u
+
+.ends
+
+*------------------------------------------------
+*             2 bit Multiplier 
+*------------------------------------------------
+* 1st mul
+
+xand1 A0 vss B0 B0_bar P0_1 tg
+xand2 A1 vss B0 B0_bar t1_1 tg
+xand3 A0 vss B1 B1_bar t2_1 tg
+xand4 A1 vss B1 B1_bar t3_1 tg
+
+xin1 vdd vss t1_1 t1_1bar in
+
+xxor1 t1_1bar t1_1 t2_1 t2_1bar P1_1 tg  
+xand5 t1_1 vss t2_1 t2_1bar c1_1 tg
+
+xin2 vdd vss t3_1 t3_1bar in
+
+xxor2 t3_1bar t3_1 c1_1 c1_1bar P2_1 tg
+xand6 t3_1 vss c1_1 c1_1bar P3_1 tg
+*------------------------------------------------
+*2nd mul
+
+xand7 A2 vss B0 B0_bar P0_2 tg
+xand8 A3 vss B0 B0_bar t1_2 tg
+xand9 A2 vss B1 B1_bar t2_2 tg
+xand10 A3 vss B1 B1_bar t3_2 tg
+
+xin3 vdd vss t1_2 t1_2bar in
+xxor3 t1_2bar t1_2 t2_2 t2_2bar P1_2 tg 
+xand11 t1_2 vss t2_2 t2_2bar c1_2 tg
+xin4 vdd vss t3_2 t3_2bar in
+xxor4 t3_2bar t3_2 c1_2 c1_2bar P2_2 tg
+xand12 t3_2 vss c1_2 c1_2bar P3_2 tg
+
+*------------------------------------------------
+*3rd mul
+
+xand13 A0 vss B2 B2_bar P0_3 tg
+xand14 A1 vss B2 B2_bar t1_3 tg
+xand15 A0 vss B3 B3_bar t2_3 tg
+xand16 A1 vss B3 B3_bar t3_3 tg
+
+xin5 vdd vss t1_3 t1_3bar in
+
+xxor5 t1_3bar t1_3 t2_3 t2_3bar P1_3 tg  
+xand17 t1_3 vss t2_3 t2_3bar c1_3 tg
+
+xin6 vdd vss t3_3 t3_3bar in
+
+xxor6 t3_3bar t3_3 c1_3 c1_3bar P2_3 tg
+xand18 t3_3 vss c1_3 c1_3bar P3_3 tg
+
+*------------------------------------------------
+*4th mul
+
+
+xand19 A2 vss B2 B2_bar P0_4 tg
+xand20 A3 vss B2 B2_bar t1_4 tg
+xand21 A2 vss B3 B3_bar t2_4 tg
+xand22 A3 vss B3 B3_bar t3_4 tg
+
+xin7 vdd vss t1_4 t1_4bar in
+
+xxor7 t1_4bar t1_4 t2_4 t2_4bar P1_4 tg  
+xand23 t1_4 vss t2_4 t2_4bar c1_4 tg
+
+xin8 vdd vss t3_4 t3_4bar in
+
+xxor8 t3_4bar t3_4 c1_4 c1_4bar P2_4 tg
+xand24 t3_4 vss c1_4 c1_4bar P3_4 tg
+
+*------------------------------------------------
+*4bit adder
+*------------------------------------------------
+*1st adder
+
+
+xin9 vdd vss P0_2 P0_2bar in
+xxor9 P0_2bar P0_2 P0_3 P0_3bar s1 tg
+xand25 P0_2 vss P0_3 P0_3bar c1 tg
+
+xin10 vdd vss P1_2 P1_2bar in
+xxor10 P1_2bar P1_2 P1_3 P1_3bar sp2 tg
+xand26 P1_2 vss P1_3 P1_3bar cp21 tg
+xin11 vdd vss sp2 sp2bar in
+xxor11 sp2bar sp2 c1 c1bar s2 tg
+xand27 sp2 vss c1 c1bar c22 tg
+xor1 vdd cp21 c22 c22_bar c2 tg
+
+xin12 vdd vss P2_2 P2_2bar in
+xxor12 P2_2bar P2_2 P2_3 P2_3bar sp3 tg
+xand28 P2_2 vss P2_3 P2_3bar cp31 tg
+xin13 vdd vss sp3 sp3bar in
+xxor13 sp3bar sp3 c2 c2bar s3 tg
+xand29 sp3 vss c2 c2bar c32 tg
+xor2 vdd cp31 c32 c32_bar c3 tg
+
+
+xin14 vdd vss P3_2 P3_2bar in
+xxor14 P3_2bar P3_2 P3_3 P3_3bar sp4 tg
+xand30 P3_2 vss P3_3 P3_3bar cp41 tg
+xin15 vdd vss sp4 sp4bar in
+xxor15 sp4bar sp4 c3 c3bar s4 tg
+xand31 sp4 vss c3 c3bar c42 tg
+xor3 vdd cp41 c42 c42_bar c4 tg
+
+*------------------------------------------------
+*2nd adder
+
+xin16 vdd vss P2_1 P2_1bar in
+xxor16 P2_1bar P2_1 s1 s1_bar s21 tg
+xand32 P2_1 vss s1 s1_bar c21 tg
+
+xin17 vdd vss P3_1 P3_1bar in
+xxor17 P3_1bar P3_1 s2 s2_bar sp21_2 tg
+xand33 P3_1 vss s2 s2_bar cp21_2 tg
+xin18 vdd vss sp21_2 sp21_2bar in
+xxor18 sp21_2bar sp21_2 c21 c21bar s22 tg
+xand34 sp21_2 vss c21 c21bar cp22_2 tg
+xor4 vdd cp21_2 cp22_2 cp22_2bar c22 tg
+
+xin19 vdd vss s3 s3_bar in
+xxor19 s3_bar s3 c22 c22_bar s23 tg
+xand35 s3 vss c22 c22_bar c23 tg
+
+xin20 vdd vss s4 s4_bar in
+xxor20 s4_bar s4 c23 c23_bar s24 tg
+
+*------------------------------------------------
+*3rd adder 
+
+xin21 vdd vss s23 s23bar in
+xxor21 s23bar s23 P0_4 P0_4bar s31 tg
+xand36 s23 vss P0_4 P0_4bar c31 tg
+
+xin22 vdd vss s24 s24bar in
+xxor22 s24bar s24 P1_4 P1_4bar sp21_3 tg
+xand37 s24 vss P1_4 P1_4bar cp21_3 tg
+xin23 vdd vss sp21_3 sp21_3bar in
+xxor23 sp21_3bar sp21_3 c31 c31bar s32 tg
+xand38 sp21_3 vss c31 c31bar cp22_3 tg
+xor5 vdd cp21_3 cp22_3 cp22_3bar c32 tg
+
+
+xin24 vdd vss c32 c32_bar in
+xxor24 c32_bar c32 P2_4 P2_4bar s33 tg
+xand39 c32 vss P2_4 P2_4bar c33 tg
+
+
+xin25 vdd vss c4 c4_bar in
+xxor25 c4_bar c4 P3_4 P3_4bar sp41_3 tg
+xin26 vdd vss sp41_3 sp41_3bar in
+xxor sp41_3bar sp41_3 c33 c33_bar s34 tg
+
+
+
+
+*------------------------------------------------
+
+
+vgnd vss 0 dc 0
+vd  vdd vss dc 1.8
+
+va0 A0  vss pulse(0 1.8 0 10n 10n 10u 20u)
+vb0 B0 vss pulse(0 1.8 5u 10n 10n 10u 20u)
+va1 A1  vss pulse(0 1.8 10u 10n 10n 10u 20u)
+vb1 B1 vss pulse(0 1.8 15u 10n 10n 10u 20u)
+
+va2 A2  vss pulse(0 1.8 0 10n 10n 10u 20u)
+vb2 B2 vss pulse(0 1.8 5u 10n 10n 10u 20u)
+va3 A3  vss pulse(0 1.8 10u 10n 10n 10u 20u)
+vb3 B3 vss pulse(0 1.8 15u 10n 10n 10u 20u)
+
+
+*------------------------------------------------
+
+.param capacitance = 200F
+
+C_P0_1 P0_1 vss {capacitance}
+C_P1_1 P1_1 vss {capacitance}
+C_s21 s21 vss {capacitance}
+C_s22 s22 vss {capacitance}
+C_s31 s31 vss {capacitance}
+C_s32 s32 vss {capacitance}
+C_s33 s33 vss {capacitance}
+C_s34 s34 vss {capacitance}
+
+*V_dummy dum P0_1  DC 0V
+    
+.control
+run
+tran 10n 100u
+
+*print i(P0_1)
+
+*print dum#branch vs v(P0_1)
+
+*plot v(P0_1)  v(P1_1)+2 v(s21)+4 v(s22)+6 v(s31)+8 v(s32)+10 v(s33)+12  v(s34)+14
+
+plot v(A0) v(A1)+2 v(A2)+4 v(A3)+6 v(B0)+8 v(B1)+10 v(B2)+12 v(B3)+14 v(P0_1)+16  v(P1_1)+18 v(s21)+20 v(s22)+22 v(s31)+24 v(s32)+26 v(s33)+28  v(s34)+30
+
+.endc
+
+
+.end
